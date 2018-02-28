@@ -15,14 +15,18 @@ public class main {
       int methodIdx = Integer.parseInt(args[0]);
       int myPid = Integer.parseInt(args[1]);
 
+
+
       //launch receiptant before talking to others
-      ArrayList<GroupMember> memberList = GroupMember.loadConfig(myPid);
-      Listener rawMessageReceiver = new Listener(myPid, memberList);
+      GroupMember.loadConfig(myPid);
+      //init Delay and Buffer
+      DelayThenBuff.init(methodIdx);
+      Listener rawMessageReceiver = new Listener(myPid);
       rawMessageReceiver.start();
 
       //run talker in main thread,
       //ctor below will inform online processes online with its eligiblity
-      Talker rawMessageSender = new Talker(methodIdx, myPid, memberList);
+      Talker rawMessageSender = new Talker(methodIdx, myPid);
 
       //getting and run usr cmd
       System.out.println("Start your commands:");

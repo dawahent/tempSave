@@ -7,8 +7,15 @@ public class GroupMember {
   public int port;
   public boolean online;
 
+  //memberList
+  public static ArrayList<GroupMember> memberList;
+
+  //useful static variable for locating self in the memberList
+  public static GroupMember me;
+  public static int meIdx;
+
   //construcotr of GroupMember, set online to false at default
-  public GroupMember(int assignedId, String assignedIP, int assignedPort){
+  private GroupMember(int assignedId, String assignedIP, int assignedPort){
     id = assignedId;
     ip = assignedIP;
     port = assignedPort;
@@ -16,12 +23,12 @@ public class GroupMember {
   }
 
   //return an arraylist of group members, if the group member is current pid
-  //set online to true
-  public static ArrayList<GroupMember> loadConfig(int myPid){
+  //set online to true. Also, assign reference to me and meIdx
+  public static void loadConfig(int myPid){
     String fileName = "config";
     String line = null;
 
-    ArrayList<GroupMember> res = new ArrayList<GroupMember>();
+    memberList = new ArrayList<GroupMember>();
 
     try{
       //loading the file
@@ -39,11 +46,14 @@ public class GroupMember {
         String[] words = line.split("\\s", 0);
         int id_ = Integer.parseInt(words[0]);
         int port_ = Integer.parseInt(words[2]);
+        
         GroupMember temp = new GroupMember(id_, words[1], port_);
         if(myPid == id_){
           temp.online = true;
+          me = temp;
+          meIdx = lineNum - 1;
         }
-        res.add(temp);
+        memberList.add(temp);
 
         lineNum++;
       }
@@ -53,14 +63,12 @@ public class GroupMember {
       System.out.println("error loading config file");
       System.exit(1);
     }
-
-    return res;
   }
 
   //return GroupMember from its arraylist if matched by id.
   //return null if not found
-  public static GroupMember searchByMemberId(ArrayList<GroupMember> mb, int searchId){
-    for(GroupMember i:mb){
+  public static GroupMember searchByMemberId(int searchId){
+    for(GroupMember i:memberList){
       if(i.id == searchId){
         return i;
       }
